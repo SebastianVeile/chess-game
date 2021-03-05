@@ -31,5 +31,12 @@
         (first
             (reduce upd-bit&pos bit&pos board))))
 
+(defn bit->board [bbit]
+    (let [piece-at-pos? #(-> (bbit %) (unsigned-bit-shift-right %2) (bit-and 1) (= 1))]
+        (for [pos (take 64 (iterate dec 63))
+              :let [piece-at-pos (filterv #(piece-at-pos? % pos) (keys bbit))]
+              :let [piece (if (empty? piece-at-pos) :- (piece-at-pos 0))]]
+            piece)))
+
 (defn squares []
     (count start-positions))
