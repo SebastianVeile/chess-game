@@ -31,12 +31,15 @@
         (first
             (reduce upd-bit&pos bit&pos board))))
 
+; Have made an assimption that there can max be one piece in each position.
+; If there is more than one piece in the same position it is random which one
+; gets to stay there. It depends on the order it is gotten from the hashmap.
+
 (defn bit->board [bbit]
     (let [piece-at-pos? #(-> (bbit %) (unsigned-bit-shift-right %2) (bit-and 1) (= 1))]
         (for [pos (take 64 (iterate dec 63))
               :let [piece-at-pos (filterv #(piece-at-pos? % pos) (keys bbit))]
               :let [piece (if (empty? piece-at-pos) :- (piece-at-pos 0))]]
             piece)))
-
 
 ; alt + shift + k
