@@ -38,5 +38,5 @@
               :let [piece (if (empty? piece-at-pos) :- (piece-at-pos 0))]]
             piece)))
 
-(defn squares []
-    (count start-positions))
+
+; alt + shift + k
