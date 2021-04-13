@@ -5,4 +5,4 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println (-> board/start-positions board/board->bit board/bit->board)))
+  (println (-> (board/starting-board) board/bit->board)))

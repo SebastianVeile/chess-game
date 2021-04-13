@@ -5,6 +5,7 @@
             [clojure.test.check.properties :as prop]
             [clojure.test.check.clojure-test :refer [defspec]]))
 
+; Would be more correct to use gen/return :k instead of gen/elements [:k]
 (def pieces [[8 (gen/elements [:p])] [2 (gen/elements [:t])]
              [2 (gen/elements [:n])] [2 (gen/elements [:b])]
              [1 (gen/elements [:q])] [1 (gen/elements [:k])]
@@ -15,7 +16,7 @@
 
 
 (defspec board->bit->board-shuffle 100
-         (prop/for-all [board (gen/shuffle board/start-positions)]
+         (prop/for-all [board (gen/shuffle (:initial-setup board/boards))]
                        (= board (-> board board/board->bit board/bit->board))))
 
 (defspec board->bit->board-random 100
