@@ -2,7 +2,7 @@
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]))
 
-(def ^:private boards (edn/read-string (slurp (io/resource "boards.edn"))))
+(def boards (edn/read-string (slurp (io/resource "boards.edn"))))
 
 (defn board->bit
   "Converts a vector-board into its bit-board representation.

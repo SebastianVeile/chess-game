@@ -14,9 +14,8 @@
              [1 (gen/elements [:Q])] [1 (gen/elements [:K])]
              [32 (gen/elements [:-])]])
 
-
 (defspec board->bit->board-shuffle 100
-         (prop/for-all [board (gen/shuffle (board/starting-board))]
+         (prop/for-all [board (gen/shuffle (:initial-setup board/boards))]
                        (= board (-> board board/board->bit board/bit->board))))
 
 (defspec board->bit->board-random 100
