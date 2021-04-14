@@ -16,7 +16,7 @@
 
 
 (defspec board->bit->board-shuffle 100
-         (prop/for-all [board (gen/shuffle (:initial-setup board/boards))]
+         (prop/for-all [board (gen/shuffle (board/starting-board))]
                        (= board (-> board board/board->bit board/bit->board))))
 
 (defspec board->bit->board-random 100
