@@ -54,10 +54,10 @@
            piece))))
 
 (defn pprint
-  [board]
   "Prints the board to stdout with its rank and file shown.
 
   This is mainly meant for debugging purposes."
+  [board]
   (doseq [:let [board (board->vector board)]
           start (range 0 57 8)
           :let [row (subvec board start (+ start 8))
