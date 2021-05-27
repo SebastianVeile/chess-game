@@ -1,5 +1,6 @@
 (ns chess-game.engine.board-test
   (:require [chess-game.engine.board :as board]
+            [clojure.test :refer [deftest is testing]]
             [clojure.test.check :as tc]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
@@ -14,14 +15,29 @@
              [1 (gen/elements [:Q])] [1 (gen/elements [:K])]
              [32 (gen/elements [:-])]])
 
-(defspec board->bit->board-shuffle 100
-         (prop/for-all [board (gen/shuffle (:initial-setup board/boards))]
-                       (= board (-> board board/board->bit board/bit->board))))
+(defspec shuffled-vector->vector->board 100
+         (prop/for-all [vector (gen/shuffle (:initial-setup board/boards))]
+                       (= vector (-> vector board/vector->board board/board->vector))))
 
-(defspec board->bit->board-random 100
-         (prop/for-all [board (gen/vector (gen/frequency pieces) 64)]
-                       (= board (-> board board/board->bit board/bit->board))))
+(defspec random-vector->vector->board 100
+         (prop/for-all [vector (gen/vector (gen/frequency pieces) 64)]
+                       (= vector (-> vector board/vector->board board/board->vector))))
+
+(def empty-board (:empty board/boards))
+
+(deftest empty-vector->board
+  (testing "Testing that an empty vector-board creates an empty bit-board (aka empty map)"
+    (is (= (board/vector->board empty-board) {}))))
+
+(deftest empty-map->vector-board
+  (testing "Testing that a empty map creates an empty vector-board"
+    (is (= (board/board->vector {}) empty-board))))
+
+(deftest empty-board->vector-board
+  (testing "Testing that an empty board creates an empty vector-board"
+    (is (= (board/board->vector
+             {:white {:P 0 :R 0 :K 0 :B 0 :Q 0 :N 0} :black {:p 0 :r 0 :k 0 :b 0 :q 0 :n 0}})
+           empty-board))))
 
 ; Other test cases to think about
-; What if the board is empty?
 ; What if the board is full? (of only one type)
