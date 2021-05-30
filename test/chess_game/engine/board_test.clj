@@ -39,5 +39,10 @@
              {:white {:P 0 :R 0 :K 0 :B 0 :Q 0 :N 0} :black {:p 0 :r 0 :k 0 :b 0 :q 0 :n 0}})
            empty-board))))
 
+(deftest board->bit->full-board-pawns
+  (testing "Validates that converting a full board of pawns from vector -> bitboard -> vector results in the same board"
+    (let [vector (:full-pawns board/boards)]
+      (= vector (-> vector board/vector->board board/board->vector)))))
+
 ; Other test cases to think about
 ; What if the board is full? (of only one type)
