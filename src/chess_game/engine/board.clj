@@ -4,6 +4,10 @@
 
 (def boards (edn/read-string (slurp (io/resource "boards.edn"))))
 
+(defn bit-set-at-pos? [bit-board pos]
+  (-> (unsigned-bit-shift-right bit-board pos) (bit-and 1) (= 1)))
+
+
 (defn board->bit
   "Converts a vector-board into its bit-board representation.
 
@@ -32,9 +36,9 @@
   which one will be printed. It depends on the order it is taken from
   the bit-board map."
   [bbit]
-  (let [piece-at-pos? #(-> (bbit %) (unsigned-bit-shift-right %2) (bit-and 1) (= 1))]
+  (let [piece-at-pos? #(-> (bbit %) (bit-set-at-pos? %2))]
     (vec (for [pos (take 64 (iterate dec 63))
-               :let [piece-at-pos (filterv #(piece-at-pos? % pos) (keys bbit))]
+               :let [piece-at-pos (filterv #(piece-at-pos? % pos) (vals bbit))]
                :let [piece (if (empty? piece-at-pos) :- (piece-at-pos 0))]]
            piece))))
 
