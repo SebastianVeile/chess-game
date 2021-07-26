@@ -21,10 +21,10 @@
   (bit-shift-left (unchecked-long bitboard) (unchecked-long 8)))
 
 (defn south-one [bitboard]
-  (bit-shift-right (unchecked-long bitboard) (unchecked-long 8)))
+  (unsigned-bit-shift-right (unchecked-long bitboard) (unchecked-long 8)))
 
 (defn east-one [bitboard]
-  (bit-shift-right (unchecked-long bitboard) (unchecked-long 1)))
+  (unsigned-bit-shift-right (unchecked-long bitboard) (unchecked-long 1)))
 
 (defn west-one [bitboard]
   (bit-shift-left (unchecked-long bitboard) (unchecked-long 1)))
@@ -33,13 +33,13 @@
   (bit-shift-left (unchecked-long bitboard) (unchecked-long 7)))
 
 (defn south-east-one [bitboard]
-  (bit-shift-right (unchecked-long bitboard) (unchecked-long 9)))
+  (unsigned-bit-shift-right (unchecked-long bitboard) (unchecked-long 9)))
 
 (defn north-west-one [bitboard]
   (bit-shift-left (unchecked-long bitboard) (unchecked-long 9)))
 
 (defn south-west-one [bitboard]
-  (bit-shift-right (unchecked-long bitboard) (unchecked-long 7)))
+  (unsigned-bit-shift-right (unchecked-long bitboard) (unchecked-long 7)))
 
 (defn white-possible-pawn-moves
   [history bitboards]
@@ -71,48 +71,28 @@
   (let [white-king-bboard (get-in bitboards [:white :K])
         white-pieces-bboard (get-in bitboards [:occupancy :white])
         black-pieces-bboard (get-in bitboards [:occupancy :black])
-        _ (println white-king-bboard)
-        _ (println not-A-file)
-        _ (println not-H-file)
-        ;;Clips board if king is on either the A or H.
-        ;;Directions on the opposite site are still needed though
-        ;;Therefore we make two separate variables.
-        king-clip-file-A-bboard (bit-and white-king-bboard not-A-file)
-        _ (println king-clip-file-A-bboard)
-        king-clip-file-H-bboard (bit-and white-king-bboard not-H-file)
-        _ (println king-clip-file-H-bboard)
 
+        ;;Masks the board if the king is on either the A or H.
+        ;;If the king is on A, we don't want to calculate positions to the left and vice versa.
+        king-mask-file-A-bboard (bit-and white-king-bboard not-A-file)
+        king-mask-file-H-bboard (bit-and white-king-bboard not-H-file)
 
-        move-ne (north-east-one king-clip-file-H-bboard)
-        _ (println move-ne)
-        move-nw (north-west-one king-clip-file-A-bboard)
-        _ (println move-nw)
-        move-w (west-one king-clip-file-A-bboard)
-        _ (println move-w)
-
-        move-sw (south-west-one king-clip-file-A-bboard)
-        _ (println move-sw)
-        move-se (south-east-one king-clip-file-H-bboard)
-        _ (println move-se)
-        move-e (east-one king-clip-file-H-bboard)
-        - (println move-e)
-
-        ;;Moves not affected by either A or H-file
+        ;Sets a bit in all 8 direction if possible
+        move-ne (north-east-one king-mask-file-H-bboard)
         move-n (north-one white-king-bboard)
-        _ (println move-n)
+        move-nw (north-west-one king-mask-file-A-bboard)
+        move-w (west-one king-mask-file-A-bboard)
+        move-sw (south-west-one king-mask-file-A-bboard)
         move-s (south-one white-king-bboard)
-        _ (println move-s)
+        move-se (south-east-one king-mask-file-H-bboard)
+        move-e (east-one king-mask-file-H-bboard)
 
-        _ (println (bit-or move-ne move-nw move-w
-                           move-sw move-se move-e
-                           move-n move-s))
         ;;Union all possible moves and remove moves where white already has pieces
         king-moves (bit-and (bit-not white-pieces-bboard) (bit-or move-ne move-nw move-w
                                                                   move-sw move-se move-e
                                                                   move-n move-s))
 
         ;;Remove moves that will result in check.
-
         ]
     king-moves))
 
