@@ -96,5 +96,7 @@
                            move-sw move-se move-e
                            move-n move-s) white-pieces-bboard)
 
+        ;;Remove moves that will result in check.
 
-        ]))
+        ]
+    king-moves))
