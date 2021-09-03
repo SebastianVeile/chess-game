@@ -29,14 +29,34 @@
   from bottom-right (0) to top-left (63). For example
   :Q in bit-board at index 60
   :Q in vector-board at index 3"
-  [board]
+  [vector]
   (let [upd-bit&pos (fn [[bit-board pos] piece]
                       (case piece
                         :- [bit-board (dec pos)]
                         [(upd-board bit-board pos piece) (dec pos)]))
         bit&pos [{} 63]]
     (first
-      (reduce upd-bit&pos bit&pos board))))
+      (reduce upd-bit&pos bit&pos vector))))
+
+(def empty_board "8/8/8/8/8/8/8/8") ;  w - -
+(def start_position "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR") ; w KQkq - 0 1
+(def tricky_position "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R") ;  w KQkq - 0 1
+(def killer_position "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR") ;  w KQkq e6 0 1
+(def cmk_position "r2q1rk1/ppp2ppp/2n1bn2/2b1p3/3pP3/3P1NPP/PPP1NPB1/R1BQ1RK1") ;  b - - 0 9
+
+;; https://www.daniweb.com/programming/software-development/code/423640/unicode-chessboard-in-a-terminal
+
+(defn FEN->board
+  [FEN]
+  (let [upd-bit&pos (fn [[bit-board pos] piece]
+                      (cond (Character/isDigit ^char piece)
+                            [bit-board (- pos (Character/digit ^char piece 10))]
+                            (= piece \/)
+                            [bit-board pos]
+                            :else
+                            [(upd-board bit-board pos piece) (dec pos)]))]
+    (first
+      (reduce upd-bit&pos [{} 63] FEN))))
 
 (defn board->vector
   "Converts a bit-board into its vector-board representation.
@@ -52,6 +72,13 @@
                :let [piece-at-pos (filterv #(piece-at-pos? % pos) (keys ps-board))]
                :let [piece (if (empty? piece-at-pos) :- (piece-at-pos 0))]]
            piece))))
+
+;(defn board->FEN
+;  [board]
+;  (let [ps-board (board->vector board)
+;        upd-fen&pos (fn [[FEN pos] piece]
+;                      (cond (= (mod pos 8) 0)
+;                            ))]))
 
 (defn pprint
   "Prints the board to stdout with its rank and file shown.
