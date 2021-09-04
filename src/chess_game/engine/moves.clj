@@ -34,7 +34,7 @@
         ;;Checks if the step in front of the pawn is not occupied by other pieces
         white-pawn-single-push (bit-and (direction/north-one white-pawn-bboard) empty-slots)
 
-        ;;Checks if the pawn can move an additional step based on the results of white-pawn-single-push
+        ;;Checks if the pawn can move an additional step using white-pawn-single-push
         ;;If the pawn is on rank 3 and the space in front is free, it can move again.
         white-pawn-double-push (bit-and (direction/north-one (bit-and white-pawn-single-push rank-3)) empty-slots)
 
@@ -104,20 +104,20 @@
 
 
   "
-  (let [;;Masks the board if the king is on either the A or H.
+  (let [;;Uses a clip if the king is on either the A or H file.
         ;;If the king is on A, we don't want to calculate positions to the left and vice versa.
-        king-mask-file-A-bboard (bit-and king-bboard not-A-file)
-        king-mask-file-H-bboard (bit-and king-bboard not-H-file)
+        king-clip-file-A-bboard (bit-and king-bboard not-A-file)
+        king-clip-file-H-bboard (bit-and king-bboard not-H-file)
 
         ;Sets a bit in all 8 directions if possible
-        move-ne (direction/north-east-one king-mask-file-H-bboard)
+        move-ne (direction/north-east-one king-clip-file-H-bboard)
         move-n (direction/north-one king-bboard)
-        move-nw (direction/north-west-one king-mask-file-A-bboard)
-        move-w (direction/west-one king-mask-file-A-bboard)
-        move-sw (direction/south-west-one king-mask-file-A-bboard)
+        move-nw (direction/north-west-one king-clip-file-A-bboard)
+        move-w (direction/west-one king-clip-file-A-bboard)
+        move-sw (direction/south-west-one king-clip-file-A-bboard)
         move-s (direction/south-one king-bboard)
-        move-se (direction/south-east-one king-mask-file-H-bboard)
-        move-e (direction/east-one king-mask-file-H-bboard)
+        move-se (direction/south-east-one king-clip-file-H-bboard)
+        move-e (direction/east-one king-clip-file-H-bboard)
 
         ;;Union all possible moves and remove moves where white already has pieces
         king-moves (bit-and (bit-not own-pieces-bboard) (bit-or move-ne move-nw move-w
