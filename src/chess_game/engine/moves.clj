@@ -18,6 +18,24 @@
 (def rank-6 (unchecked-long 0xff0000000000))
 (def not-AB-file (unchecked-long 0x3f3f3f3f3f3f3f3f))       ;; Used for knights
 (def not-HG-file (unchecked-long 0xfcfcfcfcfcfcfcfc))       ;; Used for knights
+(def file-masks {0 (unchecked-long 0X101010101010101)       ; H
+                 1 (unchecked-long 0X202020202020202)       ; G
+                 2 (unchecked-long 0X404040404040404)       ; F
+                 3 (unchecked-long 0X808080808080808)       ; E
+                 4 (unchecked-long 0X1010101010101010)      ; D
+                 5 (unchecked-long 0X2020202020202020)      ; C
+                 6 (unchecked-long 0X4040404040404040)      ; B
+                 7 (unchecked-long 0X8080808080808080)})
+(def rank-masks {0 (unchecked-long 0Xff)                    ; 1
+                 1 (unchecked-long 0Xff00)                  ; 2
+                 2 (unchecked-long 0Xff0000)                ; 3
+                 3 (unchecked-long 0Xff000000)              ; 4
+                 4 (unchecked-long 0Xff00000000)            ; 5
+                 5 (unchecked-long 0Xff0000000000)          ; 6
+                 6 (unchecked-long 0Xff000000000000)        ; 7
+                 7 (unchecked-long 0Xff00000000000000)})
+(def full-board-mask (unchecked-long 0xffffffffffffffff))
+
 
 (defn find-white-pawn-moves [white-pawn-bboard all-pieces black-pieces]
   "White pawns can only move forward if there are no white and black pieces on those positions.
@@ -155,6 +173,38 @@
              (bit-or knight-no-e-e knight-no-no-e knight-no-no-w knight-no-w-w
                      knight-so-e-e knight-so-so-e knight-so-so-w knight-so-w-w))))
 
+"Hyperbola Quintessence
+for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
+
+"
+
+(defn reverse-bits [l]
+  (Long/reverse l))
+
+(defn calculate-ray-attacks [slider-piece occupancy]
+  (->> slider-piece
+       (* 2)
+       (- occupancy)))
+
+(defn calculate-ray-moves [slider-piece occupancy rank-file]
+  (bit-and
+    (bit-xor (calculate-ray-attacks slider-piece (bit-and occupancy rank-file))
+             (reverse-bits
+               (calculate-ray-attacks (reverse-bits slider-piece) (reverse-bits (bit-and occupancy rank-file)))))
+    rank-file))
+
+(defn find-rook-moves [rook-piece own-piecs occupancy]
+  "Hyperbola Quintessence using the o^(o-2r) trick
+  o^(o-2r) https://www.chessprogramming.org/Subtracting_a_Rook_from_a_Blocking_Piece
+  Can only take one rook-piece
+  Returns a bitboard with all possible moves
+  "
+  (let [rook-piece-pos (Long/numberOfTrailingZeros rook-piece)
+        horisontal-attacks (calculate-ray-moves rook-piece occupancy (get rank-masks (quot rook-piece-pos 8)))
+        vertical-attacks (calculate-ray-moves rook-piece occupancy (get file-masks (mod rook-piece-pos 8)))]
+    (bit-and (bit-or horisontal-attacks vertical-attacks)
+             (bit-not own-piecs))))
+
 (defn white-turn? [bitboards]
   (get-in bitboards [:history :turn]))
 
@@ -176,5 +226,4 @@
           king-moves (find-king-moves (get-in bitboards [:black :k]) black-pieces)
           knight-moves (find-knight-moves (get-in bitboards [:black :n]) black-pieces)
           pawn-moves (find-white-pawn-moves (get-in bitboards [:black :p]) (:all occupancy) (:white occupancy))]
-      (bit-or king-moves knight-moves pawn-moves)))
-  )
+      (bit-or king-moves knight-moves pawn-moves))))
