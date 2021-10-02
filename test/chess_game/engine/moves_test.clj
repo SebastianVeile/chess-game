@@ -6,53 +6,53 @@
 (deftest king-moves-test
   "Validating king moves from different positions"
   (testing "Testing king pos H4"
-    (is (= (move/find-king-moves 16777216 1)
+    (is (= (move/find-king-moves 16777216 16777216)
            12918652928)))
 
   (testing "King position H1 (First bit)"
-    (is (= (move/find-king-moves (unchecked-long 1) 0)
+    (is (= (move/find-king-moves (unchecked-long 1) 1)
            (unchecked-long 770))))
 
   (testing "King position A1"
-    (is (= (move/find-king-moves (unchecked-long 128) 0)
+    (is (= (move/find-king-moves (unchecked-long 128) 128)
            (unchecked-long 49216))))
 
   (testing "King position H8"
-    (is (= (move/find-king-moves (unchecked-long 72057594037927936) 0)
+    (is (= (move/find-king-moves (unchecked-long 72057594037927936) (unchecked-long 72057594037927936))
            (unchecked-long 144959613005987840))))
 
   (testing "King position A8 (Last bit)"
-    (is (= (move/find-king-moves (unchecked-long 9223372036854775808) 0)
+    (is (= (move/find-king-moves (unchecked-long 9223372036854775808) (unchecked-long 9223372036854775808))
            (unchecked-long 4665729213955833856)))))
 
 (deftest knight-moves-test
   "Validating knight moves from different positions"
   (testing "Knight position H1 (First bit)"
-    (is (= (move/find-knight-moves (unchecked-long 1) 0)
+    (is (= (move/find-knight-moves (unchecked-long 1) 1)
            (unchecked-long 132096))))
 
   (testing "Knight position A1"
-    (is (= (move/find-knight-moves (unchecked-long 128) 0)
+    (is (= (move/find-knight-moves (unchecked-long 128) 128)
            (unchecked-long 4202496))))
 
   (testing "Knight position H8"
-    (is (= (move/find-knight-moves (unchecked-long 72057594037927936) 0)
+    (is (= (move/find-knight-moves (unchecked-long 72057594037927936) (unchecked-long 72057594037927936))
            (unchecked-long 1128098930098176))))
 
   (testing "Knight position A8 (Last bit)"
-    (is (= (move/find-knight-moves (unchecked-long 9223372036854775808) 0)
+    (is (= (move/find-knight-moves (unchecked-long 9223372036854775808) (unchecked-long 9223372036854775808))
            (unchecked-long 9077567998918656))))
 
   (testing "Knight position D4"
-    (is (= (move/find-knight-moves (unchecked-long 268435456) (unchecked-long 0))
+    (is (= (move/find-knight-moves (unchecked-long 268435456) (unchecked-long 268435456))
            (unchecked-long 44272527353856))))
 
   (testing "Knight position D4, but all slots are filled by white pieces"
-    (is (= (move/find-knight-moves (unchecked-long 268435456) (unchecked-long 44272527353856))
+    (is (= (move/find-knight-moves (unchecked-long 268435456) (unchecked-long 44272795789312))
            (unchecked-long 0))))
 
   (testing "Knight at all position D4, A1, H1, H8, A8"
-    (is (= (move/find-knight-moves (unchecked-long 9295429631161139329) 0)
+    (is (= (move/find-knight-moves (unchecked-long 9295429631161139329) 9295429631161139329)
            (unchecked-long 10249939456502784)))))
 
 (deftest white-pawn-moves-test
