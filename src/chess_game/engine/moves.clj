@@ -182,9 +182,10 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
   (Long/reverse l))
 
 (defn calculate-ray-attacks [slider-piece occupancy]
-  (->> slider-piece
-       (* 2)
-       (- occupancy)))
+  (->> (unchecked-long slider-piece)
+       (*' (unchecked-long 2))
+       (- occupancy)
+       unchecked-long)) ;Safety measure to avoid overflow when reversing bits later
 
 (defn calculate-ray-moves [slider-piece occupancy rank-file]
   (bit-and
@@ -193,17 +194,21 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
                (calculate-ray-attacks (reverse-bits slider-piece) (reverse-bits (bit-and occupancy rank-file)))))
     rank-file))
 
-(defn find-rook-moves [rook-piece own-piecs occupancy]
+(defn find-rook-moves [^Integer rook-piece-pos own-pieces occupancy]
   "Hyperbola Quintessence using the o^(o-2r) trick
-  o^(o-2r) https://www.chessprogramming.org/Subtracting_a_Rook_from_a_Blocking_Piece
-  Can only take one rook-piece
-  Returns a bitboard with all possible moves
-  "
-  (let [rook-piece-pos (Long/numberOfTrailingZeros rook-piece)
-        horisontal-attacks (calculate-ray-moves rook-piece occupancy (get rank-masks (quot rook-piece-pos 8)))
-        vertical-attacks (calculate-ray-moves rook-piece occupancy (get file-masks (mod rook-piece-pos 8)))]
+  o^(o-2r) : https://www.chessprogramming.org/Subtracting_a_Rook_from_a_Blocking_Piece
+  Hyperbola Quintessence: https://www.chessprogramming.org/Hyperbola_Quintessence
+
+  BE AWARE: This function can only take one rook-piece at the time. So to avoid giving multiple rooks, the function does not accept
+  bitboards, but instead a position of a single rook eg. number of trailing zeros.
+  Returns a bitboard with all possible moves for specified pos"
+  (let [rook-piece-bitboard (unchecked-long (bit-shift-left 1 rook-piece-pos))
+        _ (println rook-piece-bitboard)
+        horisontal-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get rank-masks (quot rook-piece-pos 8)))
+        vertical-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get file-masks (mod rook-piece-pos 8)))]
+
     (bit-and (bit-or horisontal-attacks vertical-attacks)
-             (bit-not own-piecs))))
+             (bit-not own-pieces))))
 
 (defn white-turn? [bitboards]
   (get-in bitboards [:history :turn]))
