@@ -203,7 +203,6 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
   bitboards, but instead a position of a single rook eg. number of trailing zeros.
   Returns a bitboard with all possible moves for specified pos"
   (let [rook-piece-bitboard (unchecked-long (bit-shift-left 1 rook-piece-pos))
-        _ (println rook-piece-bitboard)
         horisontal-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get rank-masks (quot rook-piece-pos 8)))
         vertical-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get file-masks (mod rook-piece-pos 8)))]
 

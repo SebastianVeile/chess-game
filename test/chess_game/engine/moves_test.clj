@@ -52,7 +52,7 @@
            (unchecked-long 0))))
 
   (testing "Knight at all position D4, A1, H1, H8, A8"
-    (is (= (move/find-knight-moves (unchecked-long 9295429631161139329) 9295429631161139329)
+    (is (= (move/find-knight-moves (unchecked-long 9295429631161139329) (unchecked-long 9295429631161139329))
            (unchecked-long 10249939456502784)))))
 
 (deftest white-pawn-moves-test
