@@ -251,6 +251,12 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
     (bit-and (bit-or diagonal-attacks anti-diagonal-attacks)
              (bit-not own-pieces))))
 
+(defn find-queen-moves [^Integer queen-piece-pos own-pieces occupancy]
+  "Queens just combine the bishop and rook calculations to find all possible moves"
+  (bit-or (find-bishop-moves queen-piece-pos own-pieces occupancy)
+          (find-rook-moves queen-piece-pos own-pieces occupancy)))
+
+
 (defn white-turn? [bitboards]
   (get-in bitboards [:history :turn]))
 
