@@ -2,7 +2,6 @@
   (:require [clojure.test :refer :all]
             [chess-game.engine.moves :as move]))
 
-
 (deftest king-moves-test
   "Validating king moves from different positions"
   (testing "Testing king pos H4"
@@ -141,3 +140,16 @@
   (testing "Initial rook position H1 - No blockers"
     (is (= (move/find-rook-moves 0 0 0)
            (unchecked-long 72340172838076926)))))
+
+(deftest bishop-moves-test
+  (testing "Bishop E4 with opponent piece on D3, D5, F3 and F5"
+    (is (= (move/find-bishop-moves 27 0x8000000 (unchecked-long 0x1408140000))
+           (unchecked-long 0x1400140000))))
+
+  (testing "Bishop E4 - No blockers"
+    (is (= (move/find-bishop-moves 27 0x8000000 0x8000000)
+           (unchecked-long 0x8041221400142241))))
+
+  (testing "Bishop E4 blocked by own pieces on D3, D5, F3 and F5"
+    (is (= (move/find-bishop-moves 27 (unchecked-long 0x1408140000) (unchecked-long 0x1408140000))
+           (unchecked-long 0)))))
