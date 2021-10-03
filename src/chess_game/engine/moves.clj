@@ -178,16 +178,19 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
 
 "
 
-(defn reverse-bits [l]
+(defn- reverse-bits [l]
   (Long/reverse l))
 
-(defn calculate-ray-attacks [slider-piece occupancy]
+(defn- calculate-ray-attacks [slider-piece occupancy]
+  "Applying (o-2s) of o^(o-2s)"
   (->> (unchecked-long slider-piece)
        (*' (unchecked-long 2))
        (- occupancy)
-       unchecked-long)) ;Safety measure to avoid overflow when reversing bits later
+       unchecked-long))                                     ;Safety measure to avoid overflow when reversing bits later
 
-(defn calculate-ray-moves [slider-piece occupancy rank-file]
+(defn- calculate-ray-moves [slider-piece occupancy rank-file]
+  "Applying o^(o-2s) ^ o^(o'-2s')' - ' symbol represents reverse bits to calculate the other direction
+  Can be reduced to (o-2s) ^ (o'-2s')' "
   (bit-and
     (bit-xor (calculate-ray-attacks slider-piece (bit-and occupancy rank-file))
              (reverse-bits
