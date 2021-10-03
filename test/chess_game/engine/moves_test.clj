@@ -153,3 +153,16 @@
   (testing "Bishop E4 blocked by own pieces on D3, D5, F3 and F5"
     (is (= (move/find-bishop-moves 27 (unchecked-long 0x1408140000) (unchecked-long 0x1408140000))
            (unchecked-long 0)))))
+
+(deftest queen-moves-test
+  (testing "Queen E4 with opponent piece on D3, D4, D5, E3, E4, F3, F4 and F5"
+    (is (= (move/find-queen-moves 27 0x8000000 0x1c1c1c0000)
+           (unchecked-long 0x1c141c0000))))
+
+  (testing "Queen E4 - No blockers"
+    (is (= (move/find-queen-moves 27 0x8000000 0x8000000)
+           (unchecked-long 0x88492a1cf71c2a49))))
+
+  (testing "Queen E4 blocked by own pieces on D3, D4, D5, E3, E4, F3, F4 and F5"
+    (is (= (move/find-queen-moves 27 0x1c1c1c0000 0x1c1c1c0000)
+           (unchecked-long 0)))))
