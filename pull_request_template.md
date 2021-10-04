@@ -1,5 +1,3 @@
-Kom eventuelt gerne med ideer til hvilke kriterier vi ellers kan tilføje
-
 ## Story Checklist
 [Markdown page for Pullrequest requirements](https://github.com/Jonas-DaiMa/chess-game/projects/1#card-68129281)
 - [ ] Story has no open dependencies to other stories and will be completed with this PR
