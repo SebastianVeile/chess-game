@@ -57,39 +57,39 @@
 
 (deftest white-pawn-moves-test
   (testing "initial pawn position - single and double push"
-    (is (= (move/find-white-pawn-moves (unchecked-long 65280) (unchecked-long 65280) 0)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 65280) (unchecked-long 65280) 0)
            (unchecked-long 4294901760))))
 
   (testing "pawn push on rank other rank than 2"
-    (is (= (move/find-white-pawn-moves (unchecked-long 16711680) (unchecked-long 16711680) 0)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 16711680) (unchecked-long 16711680) 0)
            (unchecked-long 4278190080))))
 
   (testing "Pawn position h2 is unable to attack black piece on a2"
-    (is (= (move/find-white-pawn-moves (unchecked-long 256) (unchecked-long 33024) 32768)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 256) (unchecked-long 33024) 32768)
            (unchecked-long 16842752))))
 
   (testing "Pawn position h2 is able to attack black piece on g3"
-    (is (= (move/find-white-pawn-moves (unchecked-long 256) (unchecked-long 131328) 131072)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 256) (unchecked-long 131328) 131072)
            (unchecked-long 16973824))))
 
   (testing "Pawn position a2 is unable to attack black piece on h4"
-    (is (= (move/find-white-pawn-moves (unchecked-long 32768) (unchecked-long 16809984) 16777216)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 32768) (unchecked-long 16809984) 16777216)
            (unchecked-long 2155872256))))
 
   (testing "Pawn position a2 is able to attack black piece on b3"
-    (is (= (move/find-white-pawn-moves (unchecked-long 32768) (unchecked-long 4227072) 4194304)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 32768) (unchecked-long 4227072) 4194304)
            (unchecked-long 2160066560))))
 
   (testing "Initial pawn position - pawn can only move 1 if piece is in the way on rank 4"
-    (is (= (move/find-white-pawn-moves (unchecked-long 16384) (unchecked-long 1073758208) 0)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 16384) (unchecked-long 1073758208) 0)
            (unchecked-long 4194304))))
 
   (testing "Initial pawn position - pawn cannot move since piece is in the way on rank 3"
-    (is (= (move/find-white-pawn-moves (unchecked-long 16384) (unchecked-long 4210688) 0)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 16384) (unchecked-long 4210688) 0)
            (unchecked-long 0))))
 
   (testing "Pawn position b2 can attack black pieces on both diagonals"
-    (is (= (move/find-white-pawn-moves (unchecked-long 16384) (unchecked-long 10502144) 10485760)
+    (is (= (move/lookup-white-pawn-moves (unchecked-long 16384) (unchecked-long 10502144) 10485760)
            (unchecked-long 1088421888)))))
 
 (deftest black-pawn-moves-test

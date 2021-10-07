@@ -8,28 +8,28 @@
 ;;             /  |  \
 ;;         -7    -8    -9
 ;; southwest    south   southeast
-(defn north-one [bitboard]
+(defn move-north-one [bitboard]
   (bit-shift-left (unchecked-long bitboard) 8))
 
-(defn south-one [bitboard]
+(defn move-south-one [bitboard]
   (unsigned-bit-shift-right (unchecked-long bitboard) 8))
 
-(defn east-one [bitboard]
+(defn move-east-one [bitboard]
   (unsigned-bit-shift-right (unchecked-long bitboard) 1))
 
-(defn west-one [bitboard]
+(defn move-west-one [bitboard]
   (bit-shift-left (unchecked-long bitboard) 1))
 
-(defn north-east-one [bitboard]
+(defn move-north-east-one [bitboard]
   (bit-shift-left (unchecked-long bitboard) 7))
 
-(defn south-east-one [bitboard]
+(defn move-south-east-one [bitboard]
   (unsigned-bit-shift-right (unchecked-long bitboard) 9))
 
-(defn north-west-one [bitboard]
+(defn move-north-west-one [bitboard]
   (bit-shift-left (unchecked-long bitboard) 9))
 
-(defn south-west-one [bitboard]
+(defn move-south-west-one [bitboard]
   (unsigned-bit-shift-right (unchecked-long bitboard) 7))
 
 
