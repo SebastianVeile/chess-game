@@ -1,182 +1,90 @@
 (ns chess-game.engine.moves
+  "Contains the functionality of generating all possible moves for all 6 piece types."
   (:require [chess-game.engine.direction :as direction]))
 
-;;TODO
-;;Rooks
-;;Bishops
-;;Queens
-;;Promotion of pawn
-;;Concept of check - and not being able to move intgvf o check as king
-;;En Pessant
-;;Castling
+(def not-on-A-file (unchecked-long 0x7f7f7f7f7f7f7f7f))
+(def not-on-H-file (unchecked-long 0xfefefefefefefefe))
+(def on-rank-3 (unchecked-long 0xff0000))
+(def on-rank-6 (unchecked-long 0xff0000000000))
+(def not-on-AB-file (unchecked-long 0x3f3f3f3f3f3f3f3f))    ; Used for knights
+(def not-on-HG-file (unchecked-long 0xfcfcfcfcfcfcfcfc))    ; Used for knights
 
-"Bitboard where all bits are 1 except for the given file.
- Used to clip moves, so they wont jump to the other side of the board"
-(def not-A-file (unchecked-long 0x7f7f7f7f7f7f7f7f))
-(def not-H-file (unchecked-long 0xfefefefefefefefe))
-(def rank-3 (unchecked-long 0xff0000))
-(def rank-6 (unchecked-long 0xff0000000000))
-(def not-AB-file (unchecked-long 0x3f3f3f3f3f3f3f3f))       ;; Used for knights
-(def not-HG-file (unchecked-long 0xfcfcfcfcfcfcfcfc))       ;; Used for knights
-(def file-masks {0 (unchecked-long 0X101010101010101)       ; H
-                 1 (unchecked-long 0X202020202020202)       ; G
-                 2 (unchecked-long 0X404040404040404)       ; F
-                 3 (unchecked-long 0X808080808080808)       ; E
-                 4 (unchecked-long 0X1010101010101010)      ; D
-                 5 (unchecked-long 0X2020202020202020)      ; C
-                 6 (unchecked-long 0X4040404040404040)      ; B
-                 7 (unchecked-long 0X8080808080808080)})
-(def rank-masks {0 (unchecked-long 0Xff)                    ; 1
-                 1 (unchecked-long 0Xff00)                  ; 2
-                 2 (unchecked-long 0Xff0000)                ; 3
-                 3 (unchecked-long 0Xff000000)              ; 4
-                 4 (unchecked-long 0Xff00000000)            ; 5
-                 5 (unchecked-long 0Xff0000000000)          ; 6
-                 6 (unchecked-long 0Xff000000000000)        ; 7
-                 7 (unchecked-long 0Xff00000000000000)})
-(def full-board-mask (unchecked-long 0xffffffffffffffff))
+(defn lookup-white-pawn-moves [white-pawn all-pieces black-pieces]
+  "Given a bitboard representing one or multiple white pawns,
+  a bitboard representing all-pieces, and a bitboard representing black-pieces,
+  return a bitboard where all set bits represent a possible white-pawn move"
 
-
-(defn find-white-pawn-moves [white-pawn-bboard all-pieces black-pieces]
-  "White pawns can only move forward if there are no white and black pieces on those positions.
-   White pawns can only attacks north-west or north-east if there is a black piece on that position
-
-           2
-        3  1  4
-           P
-
-
-   "
   (let [empty-slots (bit-not all-pieces)
 
-        ;;Checks if the step in front of the pawn is not occupied by other pieces
-        white-pawn-single-push (bit-and (direction/north-one white-pawn-bboard) empty-slots)
+        single-push (bit-and (direction/move-north-one white-pawn) empty-slots)
 
-        ;;Checks if the pawn can move an additional step using white-pawn-single-push
-        ;;If the pawn is on rank 3 and the space in front is free, it can move again.
-        white-pawn-double-push (bit-and (direction/north-one (bit-and white-pawn-single-push rank-3)) empty-slots)
+        ; If a pawn is on rank 3 after a single-push, it can move an additional step
+        double-push (bit-and (direction/move-north-one (bit-and single-push on-rank-3)) empty-slots)
 
-        ;;Union both to get all possible forward pawn moves
-        white-pawn-push (bit-or white-pawn-single-push white-pawn-double-push)
+        attacks-diagonal-right (bit-and (direction/move-north-east-one white-pawn) not-on-A-file)
+        attacks-diagonal-left (bit-and (direction/move-north-west-one white-pawn) not-on-H-file)
+        combined-attack-moves (bit-and black-pieces (bit-or attacks-diagonal-right attacks-diagonal-left))]
+    (bit-or single-push double-push combined-attack-moves)))
 
-        ;;White attack diagonal right
-        attacks-ne (bit-and (direction/north-east-one white-pawn-bboard) not-A-file)
-
-        ;;White attack diagonal left
-        attacks-nw (bit-and (direction/north-west-one white-pawn-bboard) not-H-file)
-
-        ;;Union both to get all possible attack moves
-        white-attack-moves (bit-and black-pieces (bit-or attacks-ne attacks-nw))
-
-        ;;TODO En passant moves
-        ]
-
-    ;;Union white pawn attacks and pushes
-    (bit-or white-pawn-push white-attack-moves)))
-
-(defn find-black-pawn-moves [black-pawn-bboard all-pieces white-pieces]
-  "Black pawns can only move forward if there are no white and black pieces on those positions.
-   Black pawns can only attacks north-west or north-east if there is a white piece on that position
-
-
-           P
-         4 1 3
-           2
-
-
-   "
+(defn lookup-black-pawn-moves [black-pawn all-pieces white-pieces]
+  "Given a bitboard representing one or multiple black pawns,
+  a bitboard representing all-pieces, and a bitboard representing white-pieces,
+  return a bitboard where all set bits represent a possible black-pawn move"
   (let [empty-slots (bit-not all-pieces)
+        single-push (bit-and (direction/move-south-one black-pawn) empty-slots)
 
-        ;;Checks if the step in front of the pawn is not occupied by other pieces
-        black-pawn-single-push (bit-and (direction/south-one black-pawn-bboard) empty-slots)
+        ; If a pawn is on rank 6 after a single-push, it can move an additional step
+        double-push (bit-and (direction/move-south-one (bit-and single-push on-rank-6)) empty-slots)
 
-        ;;Checks if the pawn can move an additional step based on the results of black-pawn-single-push
-        ;;If the pawn is on rank 3 and the space in front is free, it can move again.
-        black-pawn-double-push (bit-and (direction/south-one (bit-and black-pawn-single-push rank-6)) empty-slots)
+        attacks-diagonal-right (bit-and (direction/move-south-east-one black-pawn) not-on-A-file)
+        attacks-diagonal-left (bit-and (direction/move-south-west-one black-pawn) not-on-H-file)
 
-        ;;Union both to get all possible forward pawn moves
-        white-pawn-push (bit-or black-pawn-single-push black-pawn-double-push)
+        combined-attack-moves (bit-and white-pieces (bit-or attacks-diagonal-right attacks-diagonal-left))]
+    (bit-or single-push double-push combined-attack-moves)))
 
-        ;;Black attack diagonal right
-        attacks-ne (bit-and (direction/south-east-one black-pawn-bboard) not-A-file)
+(defn lookup-king-moves [king own-pieces]
+  "Given a bitboard representing one or multiple kings and a bitboard representing all own-pieces
+  return a bitboard where all set bits represent a possible king move"
+  (let [king-not-on-A-file (bit-and king not-on-A-file)
+        king-not-on-H-file (bit-and king not-on-H-file)
 
-        ;;Black attack diagonal left
-        attacks-nw (bit-and (direction/south-west-one black-pawn-bboard) not-H-file)
+        ; Sets a bit in all 8 directions if possible
+        move-north-east-one (direction/move-north-east-one king-not-on-H-file)
+        move-north-one (direction/move-north-one king)
+        move-north-west-one (direction/move-north-west-one king-not-on-A-file)
+        move-west-one (direction/move-west-one king-not-on-A-file)
+        move-south-west-one (direction/move-south-west-one king-not-on-A-file)
+        move-south-one (direction/move-south-one king)
+        move-south-east-one (direction/move-south-east-one king-not-on-H-file)
+        move-east-one (direction/move-east-one king-not-on-H-file)
 
-        ;;Union both to get all possible attack moves
-        white-attack-moves (bit-and white-pieces (bit-or attacks-ne attacks-nw))
+        combined-king-moves (bit-and (bit-or move-north-east-one move-north-west-one move-west-one
+                                             move-south-west-one move-south-east-one move-east-one
+                                             move-north-one move-south-one)
+                                     (bit-not own-pieces))]
+    combined-king-moves))
 
-        ;;TODO En passant moves
-        ]
+(defn lookup-knight-moves [knight-bboard own-pieces-bboard]
+  "Given a bitboard representing one or multiple knights and a bitboard representing all own-pieces
+  return a bitboard where all set bits represent a possible knight move"
+  (let [knight-not-on-AB-file (bit-and knight-bboard not-on-AB-file)
+        knight-not-on-HG-file (bit-and knight-bboard not-on-HG-file)
+        knight-not-on-A-file (bit-and knight-bboard not-on-A-file)
+        knight-not-on-H-file (bit-and knight-bboard not-on-H-file)
 
-    ;;Union white pawn attacks and pushes
-    (bit-or white-pawn-push white-attack-moves)))
+        move-north-east-east (direction/north-east-east knight-not-on-HG-file)
+        move-north-north-east (direction/north-north-east knight-not-on-H-file)
+        move-north-north-west (direction/north-north-west knight-not-on-A-file)
+        move-north-west-west (direction/north-west-west knight-not-on-AB-file)
+        move-south-west-west (direction/south-west-west knight-not-on-AB-file)
+        move-south-south-west (direction/south-south-west knight-not-on-A-file)
+        move-south-south-east (direction/south-south-east knight-not-on-H-file)
+        move-south-east-east (direction/south-east-east knight-not-on-HG-file)]
 
-(defn find-king-moves [king-bboard own-pieces-bboard]
-  "White king can move in 8 different directions
-
-
-           1  2  3
-           8  K  4
-           7  6  5
-
-
-  "
-  (let [;;Uses a clip if the king is on either the A or H file.
-        ;;If the king is on A, we don't want to calculate positions to the left and vice versa.
-        king-clip-file-A-bboard (bit-and king-bboard not-A-file)
-        king-clip-file-H-bboard (bit-and king-bboard not-H-file)
-
-        ;Sets a bit in all 8 directions if possible
-        move-ne (direction/north-east-one king-clip-file-H-bboard)
-        move-n (direction/north-one king-bboard)
-        move-nw (direction/north-west-one king-clip-file-A-bboard)
-        move-w (direction/west-one king-clip-file-A-bboard)
-        move-sw (direction/south-west-one king-clip-file-A-bboard)
-        move-s (direction/south-one king-bboard)
-        move-se (direction/south-east-one king-clip-file-H-bboard)
-        move-e (direction/east-one king-clip-file-H-bboard)
-
-        ;;Union all possible moves and remove moves where white already has pieces
-        king-moves (bit-and (bit-not own-pieces-bboard) (bit-or move-ne move-nw move-w
-                                                                move-sw move-se move-e
-                                                                move-n move-s))
-
-        ;;TODO Remove moves that will result in check.
-
-        ]
-    king-moves))
-
-(defn find-knight-moves [knight-bboard own-pieces-bboard]
-  "Knights can move in 8 different directions
-
-          2       3
-      1               4
-              N
-      8               5
-          7       6
-
-
-  "
-  (let [;;Calculates the position in all 8 directions
-        knight-no-e-e (direction/north-east-east (bit-and knight-bboard not-HG-file))
-        knight-no-no-e (direction/north-north-east (bit-and knight-bboard not-H-file))
-        knight-no-no-w (direction/north-north-west (bit-and knight-bboard not-A-file))
-        knight-no-w-w (direction/north-west-west (bit-and knight-bboard not-AB-file))
-        knight-so-w-w (direction/south-west-west (bit-and knight-bboard not-AB-file))
-        knight-so-so-w (direction/south-south-west (bit-and knight-bboard not-A-file))
-        knight-so-so-e (direction/south-south-east (bit-and knight-bboard not-H-file))
-        knight-so-e-e (direction/south-east-east (bit-and knight-bboard not-HG-file))]
-
-    ;;Union all possible moves and remove moves where white already has pieces
+    ; Union all possible moves and remove moves where own pieces are located
     (bit-and (bit-not own-pieces-bboard)
              (bit-or knight-no-e-e knight-no-no-e knight-no-no-w knight-no-w-w
                      knight-so-e-e knight-so-so-e knight-so-so-w knight-so-w-w))))
-
-"Hyperbola Quintessence
-for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
-
-"
 
 (defn- reverse-bits [l]
   (Long/reverse l))
@@ -201,6 +109,7 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
   "Hyperbola Quintessence using the o^(o-2r) trick
   o^(o-2r) : https://www.chessprogramming.org/Subtracting_a_Rook_from_a_Blocking_Piece
   Hyperbola Quintessence: https://www.chessprogramming.org/Hyperbola_Quintessence
+                          https://www.youtube.com/watch?v=bCH4YK6oq8M
 
   BE AWARE: This function can only take one rook-piece at the time. So to avoid giving multiple rooks, the function does not accept
   bitboards, but instead a position of a single rook eg. number of trailing zeros.
@@ -211,26 +120,3 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
 
     (bit-and (bit-or horisontal-attacks vertical-attacks)
              (bit-not own-pieces))))
-
-(defn white-turn? [bitboards]
-  (get-in bitboards [:history :turn]))
-
-
-(defn get-moves [bitboards]
-  "Just a temp function to illustrate that the king and knight functions are generic and works for both colors
-  This is not true for the pawn functions."
-  (if (white-turn? bitboards)
-    (let [occupancy (:occupancy bitboards)
-          white-pieces (:white occupancy)
-
-          king-moves (find-king-moves (get-in bitboards [:white :K]) white-pieces)
-          knight-moves (find-knight-moves (get-in bitboards [:white :N]) white-pieces)
-          pawn-moves (find-white-pawn-moves (get-in bitboards [:white :P]) (:all occupancy) (:black occupancy))]
-      (bit-or king-moves knight-moves pawn-moves))
-    (let [occupancy (:occupancy bitboards)
-          black-pieces (:black occupancy)
-
-          king-moves (find-king-moves (get-in bitboards [:black :k]) black-pieces)
-          knight-moves (find-knight-moves (get-in bitboards [:black :n]) black-pieces)
-          pawn-moves (find-white-pawn-moves (get-in bitboards [:black :p]) (:all occupancy) (:white occupancy))]
-      (bit-or king-moves knight-moves pawn-moves))))
