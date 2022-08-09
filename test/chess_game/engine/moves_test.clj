@@ -127,3 +127,42 @@
   (testing "Pawn position b7 can attack black pieces on both diagonals"
     (is (= (move/lookup-black-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18190320369926144) 175921860444160)
            (unchecked-long 246565482528768)))))
+
+(deftest rook-moves-test
+  (testing "rook E5 with opponent piece on G5, B5 and E7 and own piece at E2"
+    (is (= (move/find-rook-moves 35 2056 (unchecked-long 578712869944690696))
+           (unchecked-long 2261102847590400))))
+
+  (testing "Initial rook position H1 - blocked in corner by own pieces"
+    (is (= (move/find-rook-moves 0 259 259)
+           (unchecked-long 0))))
+
+  (testing "Initial rook position H1 - No blockers"
+    (is (= (move/find-rook-moves 0 0 0)
+           (unchecked-long 72340172838076926)))))
+
+(deftest bishop-moves-test
+  (testing "Bishop E4 with opponent piece on D3, D5, F3 and F5"
+    (is (= (move/find-bishop-moves 27 0x8000000 (unchecked-long 0x1408140000))
+           (unchecked-long 0x1400140000))))
+
+  (testing "Bishop E4 - No blockers"
+    (is (= (move/find-bishop-moves 27 0x8000000 0x8000000)
+           (unchecked-long 0x8041221400142241))))
+
+  (testing "Bishop E4 blocked by own pieces on D3, D5, F3 and F5"
+    (is (= (move/find-bishop-moves 27 (unchecked-long 0x1408140000) (unchecked-long 0x1408140000))
+           (unchecked-long 0)))))
+
+(deftest queen-moves-test
+  (testing "Queen E4 with opponent piece on D3, D4, D5, E3, E4, F3, F4 and F5"
+    (is (= (move/find-queen-moves 27 0x8000000 0x1c1c1c0000)
+           (unchecked-long 0x1c141c0000))))
+
+  (testing "Queen E4 - No blockers"
+    (is (= (move/find-queen-moves 27 0x8000000 0x8000000)
+           (unchecked-long 0x88492a1cf71c2a49))))
+
+  (testing "Queen E4 blocked by own pieces on D3, D4, D5, E3, E4, F3, F4 and F5"
+    (is (= (move/find-queen-moves 27 0x1c1c1c0000 0x1c1c1c0000)
+           (unchecked-long 0)))))

@@ -85,3 +85,55 @@
     (bit-and (bit-not own-pieces-bboard)
              (bit-or move-north-east-east move-north-north-east move-north-north-west move-north-west-west
                      move-south-east-east move-south-south-east move-south-south-west move-south-west-west))))
+
+"Hyperbola Quintessence
+for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
+
+"
+
+(defn- reverse-bits [l]
+  (Long/reverse l))
+
+(defn- calculate-ray-attacks [slider-piece occupancy]
+  "Applying (o-2s) of o^(o-2s)"
+  (->> (unchecked-long slider-piece)
+       (*' (unchecked-long 2))
+       (- occupancy)
+       unchecked-long))                                     ;Safety measure to avoid overflow when reversing bits later
+
+(defn- calculate-ray-moves [slider-piece occupancy rank-file]
+  "Applying o^(o-2s) ^ o^(o'-2s')' - ' symbol represents reverse bits to calculate the other direction
+  Can be reduced to (o-2s) ^ (o'-2s')' "
+  (bit-and
+    (bit-xor (calculate-ray-attacks slider-piece (bit-and occupancy rank-file))
+             (reverse-bits
+               (calculate-ray-attacks (reverse-bits slider-piece) (reverse-bits (bit-and occupancy rank-file)))))
+    rank-file))
+
+(defn find-rook-moves [^Integer rook-piece-pos own-pieces occupancy]
+  "Hyperbola Quintessence using the o^(o-2r) trick
+  o^(o-2r) : https://www.chessprogramming.org/Subtracting_a_Rook_from_a_Blocking_Piece
+  Hyperbola Quintessence: https://www.chessprogramming.org/Hyperbola_Quintessence
+
+  BE AWARE: This function can only take one rook-piece at the time. So to avoid giving multiple rooks, the function does not accept
+  bitboards, but instead a position of a single rook eg. number of trailing zeros.
+  Returns a bitboard with all possible moves for specified pos"
+  (let [rook-piece-bitboard (unchecked-long (bit-shift-left 1 rook-piece-pos))
+        horisontal-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get rank-masks (quot rook-piece-pos 8)))
+        vertical-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get file-masks (mod rook-piece-pos 8)))]
+
+    (bit-and (bit-or horisontal-attacks vertical-attacks)
+             (bit-not own-pieces))))
+
+(defn find-bishop-moves [^Integer bishop-piece-pos own-pieces occupancy]
+  "Using same technique as rooks"
+  (let [bishop-piece-bitboard (unchecked-long (bit-shift-left 1 bishop-piece-pos))
+        diagonal-attacks (calculate-ray-moves bishop-piece-bitboard occupancy (get diagonal-masks (+ (quot bishop-piece-pos 8) (mod bishop-piece-pos 8))))
+        anti-diagonal-attacks (calculate-ray-moves bishop-piece-bitboard occupancy (get anti-diagonal-masks (- (+ 7 (quot bishop-piece-pos 8)) (mod bishop-piece-pos 8))))]
+    (bit-and (bit-or diagonal-attacks anti-diagonal-attacks)
+             (bit-not own-pieces))))
+
+(defn find-queen-moves [^Integer queen-piece-pos own-pieces occupancy]
+  "Queens just combine the bishop and rook calculations to find all possible moves"
+  (bit-or (find-bishop-moves queen-piece-pos own-pieces occupancy)
+          (find-rook-moves queen-piece-pos own-pieces occupancy)))
