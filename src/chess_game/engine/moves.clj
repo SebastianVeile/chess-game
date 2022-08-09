@@ -7,7 +7,24 @@
 (def on-rank-3 (unchecked-long 0xff0000))
 (def on-rank-6 (unchecked-long 0xff0000000000))
 (def not-on-AB-file (unchecked-long 0x3f3f3f3f3f3f3f3f))    ; Used for knights
-(def not-on-HG-file (unchecked-long 0xfcfcfcfcfcfcfcfc))    ; Used for knights
+(def not-on-HG-file (unchecked-long 0xfcfcfcfcfcfcfcfc))     ; Used for knights
+(def file-masks {0 (unchecked-long 0X101010101010101)       ; H
+                 1 (unchecked-long 0X202020202020202)       ; G
+                 2 (unchecked-long 0X404040404040404)       ; F
+                 3 (unchecked-long 0X808080808080808)       ; E
+                 4 (unchecked-long 0X1010101010101010)      ; D
+                 5 (unchecked-long 0X2020202020202020)      ; C
+                 6 (unchecked-long 0X4040404040404040)      ; B
+                 7 (unchecked-long 0X8080808080808080)})    ; A
+(def rank-masks {0 (unchecked-long 0Xff)                    ; 1
+                 1 (unchecked-long 0Xff00)                  ; 2
+                 2 (unchecked-long 0Xff0000)                ; 3
+                 3 (unchecked-long 0Xff000000)              ; 4
+                 4 (unchecked-long 0Xff00000000)            ; 5
+                 5 (unchecked-long 0Xff0000000000)          ; 6
+                 6 (unchecked-long 0Xff000000000000)        ; 7
+                 7 (unchecked-long 0Xff00000000000000)})    ; 8
+(def full-board-mask (unchecked-long 0xffffffffffffffff))
 
 (defn lookup-white-pawn-moves [white-pawn all-pieces black-pieces]
   "Given a bitboard representing one or multiple white pawns,
@@ -84,7 +101,7 @@
     ; Union all possible moves and remove moves where own pieces are located
     (bit-and (bit-not own-pieces-bboard)
              (bit-or move-north-east-east move-north-north-east move-north-north-west move-north-west-west
-                     move-south-east-east move-south-south-east move-south-south-west move-south-west-west))))
+                     move-south-west-west move-south-south-west move-south-south-east move-south-east-east))))))
 
 "Hyperbola Quintessence
 for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
@@ -114,6 +131,7 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
   "Hyperbola Quintessence using the o^(o-2r) trick
   o^(o-2r) : https://www.chessprogramming.org/Subtracting_a_Rook_from_a_Blocking_Piece
   Hyperbola Quintessence: https://www.chessprogramming.org/Hyperbola_Quintessence
+                          https://www.youtube.com/watch?v=bCH4YK6oq8M
 
   BE AWARE: This function can only take one rook-piece at the time. So to avoid giving multiple rooks, the function does not accept
   bitboards, but instead a position of a single rook eg. number of trailing zeros.
@@ -121,7 +139,6 @@ for further understanding: https://www.youtube.com/watch?v=bCH4YK6oq8M
   (let [rook-piece-bitboard (unchecked-long (bit-shift-left 1 rook-piece-pos))
         horisontal-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get rank-masks (quot rook-piece-pos 8)))
         vertical-attacks (calculate-ray-moves rook-piece-bitboard occupancy (get file-masks (mod rook-piece-pos 8)))]
-
     (bit-and (bit-or horisontal-attacks vertical-attacks)
              (bit-not own-pieces))))
 
