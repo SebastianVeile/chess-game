@@ -1,9 +1,9 @@
 (ns chess-game.engine.moves-test
   (:require [clojure.test :refer :all]
-            [chess-game.engine.moves :as move]))
+            [chess-game.engine.move-generation.moves :as move]
+            [chess-game.engine.board :as board]))
 
 (deftest king-moves-test
-  "Validating king moves from different positions"
   (testing "Testing king pos H4"
     (is (= (move/lookup-king-moves 16777216 1)
            12918652928)))
@@ -56,77 +56,78 @@
 
 (deftest white-pawn-moves-test
   (testing "initial pawn position - single and double push"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 65280) (unchecked-long 65280) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 65280) (unchecked-long 65280) 0 :white)
            (unchecked-long 4294901760))))
 
   (testing "pawn push on rank other rank than 2"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 16711680) (unchecked-long 16711680) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 16711680) (unchecked-long 16711680) 0 :white)
            (unchecked-long 4278190080))))
 
   (testing "Pawn position h2 is unable to attack black piece on a2"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 256) (unchecked-long 33024) 32768)
+    (is (= (move/lookup-pawn-moves (unchecked-long 256) (unchecked-long 33024) 32768 :white)
            (unchecked-long 16842752))))
 
   (testing "Pawn position h2 is able to attack black piece on g3"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 256) (unchecked-long 131328) 131072)
+    (is (= (move/lookup-pawn-moves (unchecked-long 256) (unchecked-long 131328) 131072 :white)
            (unchecked-long 16973824))))
 
   (testing "Pawn position a2 is unable to attack black piece on h4"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 32768) (unchecked-long 16809984) 16777216)
+    (is (= (move/lookup-pawn-moves (unchecked-long 32768) (unchecked-long 16809984) 16777216 :white)
            (unchecked-long 2155872256))))
 
   (testing "Pawn position a2 is able to attack black piece on b3"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 32768) (unchecked-long 4227072) 4194304)
+    (is (= (move/lookup-pawn-moves (unchecked-long 32768) (unchecked-long 4227072) 4194304 :white)
            (unchecked-long 2160066560))))
 
   (testing "Initial pawn position - pawn can only move 1 if piece is in the way on rank 4"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 16384) (unchecked-long 1073758208) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 16384) (unchecked-long 1073758208) 0 :white)
            (unchecked-long 4194304))))
 
   (testing "Initial pawn position - pawn cannot move since piece is in the way on rank 3"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 16384) (unchecked-long 4210688) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 16384) (unchecked-long 4210688) 0 :white)
            (unchecked-long 0))))
 
   (testing "Pawn position b2 can attack black pieces on both diagonals"
-    (is (= (move/lookup-white-pawn-moves (unchecked-long 16384) (unchecked-long 10502144) 10485760)
+    (is (= (move/lookup-pawn-moves (unchecked-long 16384) (unchecked-long 10502144) 10485760 :white)
            (unchecked-long 1088421888)))))
 
 (deftest black-pawn-moves-test
   (testing "initial pawn position - single and double push"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 71776119061217280) (unchecked-long 71776119061217280) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 71776119061217280) (unchecked-long 71776119061217280) 0 :black)
            (unchecked-long 281470681743360))))
 
   (testing "pawn push on rank other rank than 7"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 280375465082880) (unchecked-long 280375465082880) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 280375465082880) (unchecked-long 280375465082880) 0 :black)
            (unchecked-long 1095216660480))))
 
   (testing "Pawn position h7 is unable to attack black piece on a7"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 281474976710656) (unchecked-long 36310271995674624) (unchecked-long 36028797018963968))
+    (is (= (move/lookup-pawn-moves (unchecked-long 281474976710656) (unchecked-long 36310271995674624) (unchecked-long 36028797018963968) :black)
            (unchecked-long 1103806595072))))
 
   (testing "Pawn position h2 is able to attack black piece on g6"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 281474976710656) (unchecked-long 283673999966208) (unchecked-long 2199023255552))
+    (is (= (move/lookup-pawn-moves (unchecked-long 281474976710656) (unchecked-long 283673999966208) (unchecked-long 2199023255552) :black)
            (unchecked-long 3302829850624))))
 
   (testing "Pawn position a7 is unable to attack black piece on h5"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 36028797018963968) (unchecked-long 36028801313931264) 4294967296)
+    (is (= (move/lookup-pawn-moves (unchecked-long 36028797018963968) (unchecked-long 36028801313931264) 4294967296 :black)
            (unchecked-long 141287244169216))))
 
   (testing "Pawn position a7 is able to attack black piece on b6"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 36028797018963968) (unchecked-long 36099165763141632) (unchecked-long 70368744177664))
+    (is (= (move/lookup-pawn-moves (unchecked-long 36028797018963968) (unchecked-long 36099165763141632) (unchecked-long 70368744177664) :black)
            (unchecked-long 211655988346880))))
 
   (testing "Initial pawn position - pawn can only move 1 if piece is in the way on rank 4"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18014673387388928) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18014673387388928) 0 :black)
            (unchecked-long 70368744177664))))
 
   (testing "Initial pawn position - pawn cannot move since piece is in the way on rank 3"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18084767253659648) 0)
+    (is (= (move/lookup-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18084767253659648) 0 :black)
            (unchecked-long 0))))
 
   (testing "Pawn position b7 can attack black pieces on both diagonals"
-    (is (= (move/lookup-black-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18190320369926144) 175921860444160)
+    (is (= (move/lookup-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18190320369926144) 175921860444160 :black)
            (unchecked-long 246565482528768)))))
+
 
 (deftest rook-moves-test
   (testing "rook E5 with opponent piece on G5, B5 and E7 and own piece at E2"
@@ -164,5 +165,13 @@
            (unchecked-long 0x88492a1cf71c2a49))))
 
   (testing "Queen E4 blocked by own pieces on D3, D4, D5, E3, E4, F3, F4 and F5"
-    (is (= (move/find-queen-moves 27 0x1c1c1c0000 0x1c1c1c0000)
-           (unchecked-long 0)))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :P :P :P :- :-
+                                          :- :- :- :P :Q :P :- :-
+                                          :- :- :- :P :P :P :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/find-queen-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards  [:occupancy :all]))
+             (unchecked-long 0))))))

@@ -44,5 +44,4 @@
     (let [vector (:full-pawns board/boards)]
       (= vector (-> vector board/vector->board board/board->vector)))))
 
-; Other test cases to think about
-; What if the board is full? (of only one type)
+(board/vector->board (:initial-setup board/boards))

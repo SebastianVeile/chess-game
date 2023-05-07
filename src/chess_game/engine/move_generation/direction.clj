@@ -1,4 +1,4 @@
-(ns chess-game.engine.direction)
+(ns chess-game.engine.move-generation.direction)
 
 ;;Directions
 ;; northwest    north   northeast
@@ -32,6 +32,23 @@
 (defn move-south-west-one [bitboard]
   (unsigned-bit-shift-right (unchecked-long bitboard) 7))
 
+(defn move-diagonal-right
+  [bitboard color]
+  (if (= color :white)
+    (bit-shift-left bitboard 7)
+    (bit-shift-right bitboard 9)))
+
+(defn move-forward
+  [bitboard color]
+  (if (= color :white)
+    (bit-shift-left bitboard 8)
+    (bit-shift-right bitboard 8)))
+
+(defn move-diagonal-left
+  [bitboard color]
+  (if (= color :white)
+    (bit-shift-left bitboard 9)
+    (bit-shift-right bitboard 7)))
 
 ; ONLY USED BY KNIGHTS
 ; The naming represent a move in each direction -> North north east, would be two spaces up and one to the right
@@ -60,7 +77,7 @@
   (bit-shift-left (unchecked-long bitboard) 10))
 
 (defn south-west-west [bitboard]
-  (unsigned-bit-shift-right  (unchecked-long bitboard) 6))
+  (unsigned-bit-shift-right (unchecked-long bitboard) 6))
 
 (defn south-east-east [bitboard]
   (unsigned-bit-shift-right (unchecked-long bitboard) 10))
