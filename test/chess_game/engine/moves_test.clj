@@ -5,164 +5,468 @@
 
 (deftest king-moves-test
   (testing "Testing king pos H4"
-    (is (= (move/lookup-king-moves 16777216 1)
-           12918652928)))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :K
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-king-moves (get-in bitboards [:white :K]) (get-in bitboards [:occupancy :white]))
+             12918652928))))
 
   (testing "King position H1 (First bit)"
-    (is (= (move/lookup-king-moves (unchecked-long 1) 0)
-           (unchecked-long 770))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :K])]
+      (is (= (move/lookup-king-moves (get-in bitboards [:white :K]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 770)))))
 
   (testing "King position A1"
-    (is (= (move/lookup-king-moves (unchecked-long 128) 0)
-           (unchecked-long 49216))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :K :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-king-moves (get-in bitboards [:white :K]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 49216)))))
 
   (testing "King position H8"
-    (is (= (move/lookup-king-moves (unchecked-long 72057594037927936) 0)
-           (unchecked-long 144959613005987840))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :K
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-king-moves (get-in bitboards [:white :K]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 144959613005987840)))))
 
   (testing "King position A8 (Last bit)"
-    (is (= (move/lookup-king-moves (unchecked-long 9223372036854775808) 0)
-           (unchecked-long 4665729213955833856)))))
+    (let [bitboards (board/vector->board [:K :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :q :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-king-moves (get-in bitboards [:white :K]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 4665729213955833856))))))
 
 (deftest knight-moves-test
   "Validating knight moves from different positions"
   (testing "Knight position H1 (First bit)"
-    (is (= (move/lookup-knight-moves (unchecked-long 1) 0)
-           (unchecked-long 132096))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :N])]
+      (is (= (move/lookup-knight-moves (get-in bitboards [:white :N]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 132096)))))
 
   (testing "Knight position A1"
-    (is (= (move/lookup-knight-moves (unchecked-long 128) 0)
-           (unchecked-long 4202496))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :N :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-knight-moves (get-in bitboards [:white :N]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 4202496)))))
 
   (testing "Knight position H8"
-    (is (= (move/lookup-knight-moves (unchecked-long 72057594037927936) 0)
-           (unchecked-long 1128098930098176))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :N
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-knight-moves (get-in bitboards [:white :N]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 1128098930098176)))))
 
   (testing "Knight position A8 (Last bit)"
-    (is (= (move/lookup-knight-moves (unchecked-long 9223372036854775808) 0)
-           (unchecked-long 9077567998918656))))
+    (let [bitboards (board/vector->board [:N :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-knight-moves (get-in bitboards [:white :N]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 9077567998918656)))))
 
   (testing "Knight position D4"
-    (is (= (move/lookup-knight-moves (unchecked-long 268435456) (unchecked-long 0))
-           (unchecked-long 44272527353856))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :N :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-knight-moves (get-in bitboards [:white :N]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 44272527353856)))))
 
   (testing "Knight position D4, but all slots are filled by white pieces"
-    (is (= (move/lookup-knight-moves (unchecked-long 268435456) (unchecked-long 44272527353856))
-           (unchecked-long 0))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :Q :- :Q :- :- :-
+                                          :- :Q :- :- :- :Q :- :-
+                                          :- :- :- :N :- :- :- :-
+                                          :- :Q :- :- :- :Q :- :-
+                                          :- :- :Q :- :Q :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-knight-moves (get-in bitboards [:white :N]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 0)))))
 
   (testing "Knight at all position D4, A1, H1, H8, A8"
-    (is (= (move/lookup-knight-moves (unchecked-long 9295429631161139329) 0)
-           (unchecked-long 10249939456502784)))))
+    (let [bitboards (board/vector->board [:N :- :- :- :- :- :- :N
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :N :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :N :- :- :- :- :- :- :N])]
+      (is (= (move/lookup-knight-moves (get-in bitboards [:white :N]) (get-in bitboards [:occupancy :white]))
+             (unchecked-long 10249939456502784))))))
 
 (deftest white-pawn-moves-test
   (testing "initial pawn position - single and double push"
-    (is (= (move/lookup-pawn-moves (unchecked-long 65280) (unchecked-long 65280) 0 :white)
-           (unchecked-long 4294901760))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :P :P :P :P :P :P :P :P
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 4294901760)))))
 
   (testing "pawn push on rank other rank than 2"
-    (is (= (move/lookup-pawn-moves (unchecked-long 16711680) (unchecked-long 16711680) 0 :white)
-           (unchecked-long 4278190080))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :q :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :P :P :P :P :P :P :P :P
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 4278190080)))))
 
   (testing "Pawn position h2 is unable to attack black piece on a2"
-    (is (= (move/lookup-pawn-moves (unchecked-long 256) (unchecked-long 33024) 32768 :white)
-           (unchecked-long 16842752))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :r :- :- :- :- :- :- :P
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 16842752)))))
 
   (testing "Pawn position h2 is able to attack black piece on g3"
-    (is (= (move/lookup-pawn-moves (unchecked-long 256) (unchecked-long 131328) 131072 :white)
-           (unchecked-long 16973824))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :r :-
+                                          :- :- :- :- :- :- :- :P
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 16973824)))))
 
   (testing "Pawn position a2 is unable to attack black piece on h4"
-    (is (= (move/lookup-pawn-moves (unchecked-long 32768) (unchecked-long 16809984) 16777216 :white)
-           (unchecked-long 2155872256))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :r
+                                          :- :- :- :- :- :- :- :-
+                                          :P :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 2155872256)))))
 
   (testing "Pawn position a2 is able to attack black piece on b3"
-    (is (= (move/lookup-pawn-moves (unchecked-long 32768) (unchecked-long 4227072) 4194304 :white)
-           (unchecked-long 2160066560))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :r :- :- :- :- :- :-
+                                          :P :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 2160066560)))))
 
-  (testing "Initial pawn position - pawn can only move 1 if piece is in the way on rank 4"
-    (is (= (move/lookup-pawn-moves (unchecked-long 16384) (unchecked-long 1073758208) 0 :white)
-           (unchecked-long 4194304))))
+  (testing "Pawn position b2 - pawn can only move 1 if piece is in the way on rank 4"
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :r :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :P :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 4194304)))))
 
-  (testing "Initial pawn position - pawn cannot move since piece is in the way on rank 3"
-    (is (= (move/lookup-pawn-moves (unchecked-long 16384) (unchecked-long 4210688) 0 :white)
-           (unchecked-long 0))))
+  (testing "Pawn position b2 - pawn cannot move since piece is in the way on rank 3"
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :r :- :- :- :- :- :-
+                                          :- :P :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 0)))))
 
   (testing "Pawn position b2 can attack black pieces on both diagonals"
-    (is (= (move/lookup-pawn-moves (unchecked-long 16384) (unchecked-long 10502144) 10485760 :white)
-           (unchecked-long 1088421888)))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :r :- :r :- :- :- :- :-
+                                          :- :P :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:white :P]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :black]) :white)
+             (unchecked-long 1088421888))))))
 
 (deftest black-pawn-moves-test
   (testing "initial pawn position - single and double push"
-    (is (= (move/lookup-pawn-moves (unchecked-long 71776119061217280) (unchecked-long 71776119061217280) 0 :black)
-           (unchecked-long 281470681743360))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :p :p :p :p :p :p :p :p
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :P :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 281470681743360)))))
 
-  (testing "pawn push on rank other rank than 7"
-    (is (= (move/lookup-pawn-moves (unchecked-long 280375465082880) (unchecked-long 280375465082880) 0 :black)
-           (unchecked-long 1095216660480))))
+  (testing "pawn push on all rank 6"
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :p :p :p :p :p :p :p :p
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :P :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 1095216660480)))))
 
   (testing "Pawn position h7 is unable to attack black piece on a7"
-    (is (= (move/lookup-pawn-moves (unchecked-long 281474976710656) (unchecked-long 36310271995674624) (unchecked-long 36028797018963968) :black)
-           (unchecked-long 1103806595072))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :Q :- :- :- :- :- :- :p
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 1103806595072)))))
 
-  (testing "Pawn position h2 is able to attack black piece on g6"
-    (is (= (move/lookup-pawn-moves (unchecked-long 281474976710656) (unchecked-long 283673999966208) (unchecked-long 2199023255552) :black)
-           (unchecked-long 3302829850624))))
+  (testing "Pawn position h7 is able to attack black piece on g6"
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :p
+                                          :- :- :- :- :- :- :Q :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 3302829850624)))))
 
   (testing "Pawn position a7 is unable to attack black piece on h5"
-    (is (= (move/lookup-pawn-moves (unchecked-long 36028797018963968) (unchecked-long 36028801313931264) 4294967296 :black)
-           (unchecked-long 141287244169216))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :p :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :Q
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 141287244169216)))))
 
   (testing "Pawn position a7 is able to attack black piece on b6"
-    (is (= (move/lookup-pawn-moves (unchecked-long 36028797018963968) (unchecked-long 36099165763141632) (unchecked-long 70368744177664) :black)
-           (unchecked-long 211655988346880))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :p :- :- :- :- :- :- :-
+                                          :- :Q :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 211655988346880)))))
 
-  (testing "Initial pawn position - pawn can only move 1 if piece is in the way on rank 4"
-    (is (= (move/lookup-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18014673387388928) 0 :black)
-           (unchecked-long 70368744177664))))
+  (testing "Pawn position B7 - blocked by own piece on rank 4, pawn can only move 1 forward"
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :p :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :r :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :P
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 70368744177664)))))
 
-  (testing "Initial pawn position - pawn cannot move since piece is in the way on rank 3"
-    (is (= (move/lookup-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18084767253659648) 0 :black)
-           (unchecked-long 0))))
+  (testing "Pawn position B7 - blocked by own piece on rank 3"
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :p :- :- :- :- :- :-
+                                          :- :r :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :P
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 0)))))
 
   (testing "Pawn position b7 can attack black pieces on both diagonals"
-    (is (= (move/lookup-pawn-moves (unchecked-long 18014398509481984) (unchecked-long 18190320369926144) 175921860444160 :black)
-           (unchecked-long 246565482528768)))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :p :- :- :- :- :- :-
+                                          :Q :- :Q :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/lookup-pawn-moves (get-in bitboards [:black :p]) (get-in bitboards [:occupancy :all]) (get-in bitboards [:occupancy :white]) :black)
+             (unchecked-long 246565482528768))))))
 
 
 (deftest rook-moves-test
   (testing "rook E5 with opponent piece on G5, B5 and E7 and own piece at E2"
-    (is (= (move/find-rook-moves 35 2056 (unchecked-long 578712869944690696))
-           (unchecked-long 2261102847590400))))
+    (let [bitboards (board/vector->board [:- :- :- :- :p :- :- :-
+                                          :- :- :- :- :p :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :p :- :- :R :- :p :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :P :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/find-rook-moves 35 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 2261102847590400)))))
 
   (testing "Initial rook position H1 - blocked in corner by own pieces"
-    (is (= (move/find-rook-moves 0 259 259)
-           (unchecked-long 0))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :P
+                                          :- :- :- :- :- :- :P :R])]
+      (is (= (move/find-rook-moves 0 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 0)))))
 
   (testing "Initial rook position H1 - No blockers"
-    (is (= (move/find-rook-moves 0 0 0)
-           (unchecked-long 72340172838076926)))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :R])]
+      (is (= (move/find-rook-moves 0 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 72340172838076926))))))
 
 (deftest bishop-moves-test
   (testing "Bishop E4 with opponent piece on D3, D5, F3 and F5"
-    (is (= (move/find-bishop-moves 27 0x8000000 (unchecked-long 0x1408140000))
-           (unchecked-long 0x1400140000))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :p :- :p :- :-
+                                          :- :- :- :- :B :- :- :-
+                                          :- :- :- :p :- :p :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/find-bishop-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 0x1400140000)))))
 
   (testing "Bishop E4 - No blockers"
-    (is (= (move/find-bishop-moves 27 0x8000000 0x8000000)
-           (unchecked-long 0x8041221400142241))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :B :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/find-bishop-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 0x8041221400142241)))))
 
   (testing "Bishop E4 blocked by own pieces on D3, D5, F3 and F5"
-    (is (= (move/find-bishop-moves 27 (unchecked-long 0x1408140000) (unchecked-long 0x1408140000))
-           (unchecked-long 0)))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :P :- :P :- :-
+                                          :- :- :- :- :B :- :- :-
+                                          :- :- :- :P :- :P :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/find-bishop-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 0))))))
 
 (deftest queen-moves-test
   (testing "Queen E4 with opponent piece on D3, D4, D5, E3, E4, F3, F4 and F5"
-    (is (= (move/find-queen-moves 27 0x8000000 0x1c1c1c0000)
-           (unchecked-long 0x1c141c0000))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :p :p :p :- :-
+                                          :- :- :- :p :Q :p :- :-
+                                          :- :- :- :p :p :p :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/find-queen-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 0x1c141c0000)))))
 
   (testing "Queen E4 - No blockers"
-    (is (= (move/find-queen-moves 27 0x8000000 0x8000000)
-           (unchecked-long 0x88492a1cf71c2a49))))
+    (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :Q :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-
+                                          :- :- :- :- :- :- :- :-])]
+      (is (= (move/find-queen-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
+             (unchecked-long 0x88492a1cf71c2a49)))))
 
   (testing "Queen E4 blocked by own pieces on D3, D4, D5, E3, E4, F3, F4 and F5"
     (let [bitboards (board/vector->board [:- :- :- :- :- :- :- :-
@@ -173,5 +477,5 @@
                                           :- :- :- :P :P :P :- :-
                                           :- :- :- :- :- :- :- :-
                                           :- :- :- :- :- :- :- :-])]
-      (is (= (move/find-queen-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards  [:occupancy :all]))
+      (is (= (move/find-queen-moves 27 (get-in bitboards [:occupancy :white]) (get-in bitboards [:occupancy :all]))
              (unchecked-long 0))))))

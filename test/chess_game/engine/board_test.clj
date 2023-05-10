@@ -43,5 +43,3 @@
   (testing "Validates that converting a full board of pawns from vector -> bitboard -> vector results in the same board"
     (let [vector (:full-pawns board/boards)]
       (= vector (-> vector board/vector->board board/board->vector)))))
-
-(board/vector->board (:initial-setup board/boards))
