@@ -7,7 +7,7 @@
   (bit-not all-pieces))
 
 (defn lookup-pawn-moves [pawns all-pieces opponent-pieces turn]
-  "Given a bitboard representing one or multiple white pawns,
+  "Given a bitboard representing one or multiple pawns (Supports both black and white pawns),
   a bitboard representing all-pieces, and a bitboard representing opponent-pieces,
   return a bitboard where all set bits represent a possible pawns move"
   (let [empty-slots (get-empty-slots all-pieces)
